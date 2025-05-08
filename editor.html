@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EditorText – Mis notas</title>
+
+  <!-- Bootstrap & Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <style>
+    :root {
+      --edit-bg: #5A9BD8;      /* azul suave */
+      --edit-hover: #4A8AC0;
+      --delete-bg: #E07A5F;    /* terracota */
+      --delete-hover: #D0664F;
+    }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f7f5fc;
+    }
+    .navbar {
+      background: #2c3e50 !important;
+    }
+    .btn-primary {
+      background: #3498db;
+      border-color: #3498db;
+    }
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    }
+    .card-header {
+      background: #3498db;
+      color: #fff;
+    }
+    .note-body {
+      padding: .75rem;
+      background: #fff;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .note-body p {
+      margin-bottom: .75rem;
+      line-height: 1.4;
+    }
+    /* botones personalizados */
+    .btn-edit {
+      background: var(--edit-bg);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .4rem .6rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: background .2s, transform .2s;
+    }
+    .btn-edit:hover {
+      background: var(--edit-hover);
+      transform: translateY(-2px);
+    }
+    .btn-delete {
+      background: var(--delete-bg);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .4rem .6rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: background .2s, transform .2s;
+    }
+    .btn-delete:hover {
+      background: var(--delete-hover);
+      transform: translateY(-2px);
+    }
+    .btn-edit i, .btn-delete i {
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark py-3">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">EditorText</a>
+      <div class="ms-auto">
+        <a href="editor.html" class="btn btn-outline-light btn-sm me-2">
+          <i class="fas fa-edit"></i>
+        </a>
+        <a href="index.html" class="btn btn-outline-light btn-sm">
+          <i class="fas fa-home"></i>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 mb-0">Mis notas</h2>
+      <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i></button>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Recordatorios</div>
+          <div class="note-body">
+            <p>Revisar la presentación de la charla de ciberseguridad antes del viernes. Incluye ejemplos de ataques recientes y recomendaciones.</p>
+            <p>Enviar el reporte de BGP multi-homing al profesor Martínez, con diagramas y resultados de ping.</p>
+          </div>
+          <div class="card-body text-end">
+            <button class="btn-edit"><i class="fas fa-edit"></i><span>Editar</span></button>
+            <button class="btn-delete"><i class="fas fa-trash"></i><span>Eliminar</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Ideas de proyecto</div>
+          <div class="note-body">
+            <p>Crear página de notas que guarde automáticamente en localStorage.</p>
+            <p>Agregar filtros para marcar y ordenar por categoría.</p>
+            <p>Implementar modo oscuro para lectura nocturna.</p>
+          </div>
+          <div class="card-body text-end">
+            <button class="btn-edit"><i class="fas fa-edit"></i><span>Editar</span></button>
+            <button class="btn-delete"><i class="fas fa-trash"></i><span>Eliminar</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
