@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EditorText - Proyecto Final</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+        }
+        .hero {
+            background: #3498db;
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        .imagen-editor {
+            background: #f0f0f0;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            color: #666;
+        }
+        .pasos {
+            background: #f8f9fa;
+            padding: 40px 0;
+        }
+        .paso {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .numero-paso {
+            background: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .registro {
+            background: #2c3e50;
+            color: white;
+            padding: 50px 0;
+            text-align: center;
+        }
+        footer {
+            background: #34495e;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar  -->
+<header>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-bold fs-4">EditorText</span>
+            <div>
+                <a href="editor.html" class="btn btn-outline-light btn-sm me-2">
+                    <i class="fas fa-edit"></i> Ir al Editor
+                </a>
+                <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    <i class="fas fa-user"></i> Cuenta
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Portada -->
+<section class="hero">
+    <div class="container">
+        <h1 class="display-5 fw-bold">Editor de Texto Online</h1>
+        <p class="lead">Proyecto final de Desarrollo Web</p>
+    </div>
+</section>
+
+<!-- Sección Qué es -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="fw-bold mb-4">¿Qué es?</h2>
+                <p>EditorText es un editor de texto online.</p>
+                <p>Puedes usarlo para:</p>
+                <ul>
+                    <li>Escribir y editar texto</li>
+                    <li>Guardar tus documentos</li>
+                    <li>Trabajar desde cualquier dispositivo</li>
+                </ul>
+            </div>
+            <div class="col-md-6 mt-4 mt-md-0">
+                <div class="imagen-editor">
+                    <i class="fas fa-file-alt fa-3x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección Cómo funciona -->
+<section class="pasos">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5">¿Cómo funciona?</h2>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="paso">
+                    <div class="numero-paso">1</div>
+                    <h4>Regístrate</h4>
+                    <p>Crea una cuenta gratis</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="paso">
+                    <div class="numero-paso">2</div>
+                    <h4>Escribe</h4>
+                    <p>Comienza a editar tu texto</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="paso">
+                    <div class="numero-paso">3</div>
+                    <h4>Guarda</h4>
+                    <p>Guarda tu trabajo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección de registro -->
+<section class="registro">
+    <div class="container">
+        <h2 class="mb-4">¿Quieres probarlo?</h2>
+        <p class="lead mb-4">Regístrate gratis y comienza a usar EditorText</p>
+        <button class="btn btn-danger btn-lg" data-bs-toggle="modal" data-bs-target="#registroModal">
+            <i class="fas fa-user-plus"></i> Registrarse
+        </button>
+    </div>
+</section>
+
+<!-- inferior-->
+<footer class="py-4">
+    <div class="container">
+        <div class="mb-3">
+            <a href="#" class="text-white mx-2"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p class="mb-0">Proyecto Final - Desarrollo Web - 4to Semestre</p>
+        <p class="mb-0">&copy; 2023 EditorText</p>
+    </div>
+</footer>
+
+<!-- Modals de Login -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Iniciar Sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <p>¿No tienes cuenta? <a href="#" data-bs-toggle="modal" data-bs-target="#registroModal" data-bs-dismiss="modal">Regístrate</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals de Registro -->
+<div class="modal fade" id="registroModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear Cuenta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="POST">
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Nombre(s)" aria-describedby="helpId" required>
+                        </div>
+                        <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                            <input type="text" name="apellidos" id="apellidos" class="form-control" placeholder="Apellidos" aria-describedby="helpId" required>
+                        </div>
+                    </div>
+                    <input type="email" name="correo" id="correo" class="form-control mt-3" placeholder="Tu correo" aria-describedby="helpId" required>
+
+                    <input type="password" name="contrasena" class="form-control mt-3" placeholder="Contraseña" aria-describedby="helpId" required
+                           pattern="^(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9]{6,}$" title="La contraseña debe tener al menos 6 caracteres, una mayúscula y una minúscula.">
+
+                    <input type="password" name="confirmar_contrasena" class="form-control mt-3" placeholder="Confirmar contraseña" aria-describedby="helpId" required
+                           pattern="^(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9]{6,}$" title="La contraseña debe tener al menos 6 caracteres, una mayúscula y una minúscula.">
+
+                    <div class="form-group">
+                        <div class="d-flex justify-content-center">
+                            <input type="submit" value="Registrarse" class="btn btn-success mt-3">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <p>¿Ya tienes cuenta? <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">Inicia sesión</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS + Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
