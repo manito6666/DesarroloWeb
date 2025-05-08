@@ -3,137 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EditorText – Mis notas</title>
-  
-  <!-- Bootstrap & Font Awesome -->
+  <title>EditorText - Editor</title>
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-
   <style>
-    :root {
-      --edit-bg: #5A9BD8;      /* azul suave */
-      --edit-hover: #4A8AC0;
-      --delete-bg: #E07A5F;    /* terracota */
-      --delete-hover: #D0664F;
-    }
     body {
-      font-family: system-ui, sans-serif;
+      font-family: 'Poppins', sans-serif;
       background: #f7f5fc;
     }
+    /* Navbar, tonos como la de homeee*/
     .navbar {
-      background: #2c3e50 !important;
+      background: #2c3e50;
     }
-    .btn-primary {
-      background: #3498db;
-      border-color: #3498db;
+    /* Color principal */
+    .bg-primary {
+      background-color: #3498db !important;
     }
-    .card {
+    /* Card del editor */
+    .card-editor {
       border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
     }
-    .card-header {
-      background: #3498db;
-      color: #fff;
+    /* Toolbar */
+    #toolbar .btn {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border-radius: 6px;
     }
-    .note-body {
-      padding: .75rem;
+    /* Área editable */
+    #editor {
+      min-height: 50vh;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 1rem;
       background: #fff;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-    .note-body p {
-      margin-bottom: .75rem;
-      line-height: 1.4;
-    }
-    /* botones personalizados */
-    .btn-edit {
-      background: var(--edit-bg);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: .4rem .6rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      transition: background .2s, transform .2s;
-    }
-    .btn-edit:hover {
-      background: var(--edit-hover);
-      transform: translateY(-2px);
-    }
-    .btn-delete {
-      background: var(--delete-bg);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: .4rem .6rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      transition: background .2s, transform .2s;
-    }
-    .btn-delete:hover {
-      background: var(--delete-hover);
-      transform: translateY(-2px);
-    }
-    .btn-edit i, .btn-delete i {
-      font-size: 1rem;
+      outline: none;
     }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark py-3">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">EditorText</a>
-      <div class="ms-auto">
-        <a href="editor.html" class="btn btn-outline-light btn-sm me-2">
-          <i class="fas fa-edit"></i>
-        </a>
-        <a href="index.html" class="btn btn-outline-light btn-sm">
-          <i class="fas fa-home"></i>
-        </a>
-      </div>
-    </div>
-  </nav>
 
-  <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="h5 mb-0">Mis notas</h2>
-      <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i></button>
+<!-- Navbar idéntica a home -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand fw-semibold" href="#">EditorText</a>
+    <div class="ms-auto">
+      <a href="notas.html" class="btn btn-outline-light btn-sm me-2">
+        <i class="fas fa-sticky-note"></i> Notas
+      </a>
+      <a href="index.html" class="btn btn-outline-light btn-sm me-2">
+        <i class="fas fa-home"> </i> Inicio
+      </a>
+      <button class="btn btn-outline-light btn-sm">
+        <i class="fas fa-user"></i> Cuenta
+      </button>
     </div>
-    <div class="row g-4">
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">Recordatorios</div>
-          <div class="note-body">
-            <p>Revisar la presentación de la charla de ciberseguridad antes del viernes. Incluye ejemplos de ataques recientes y recomendaciones.</p>
-            <p>Enviar el reporte de BGP multi-homing al profesor Martínez, con diagramas y resultados de ping.</p>
-          </div>
-          <div class="card-body text-end">
-            <button class="btn-edit"><i class="fas fa-edit"></i><span>Editar</span></button>
-            <button class="btn-delete"><i class="fas fa-trash"></i><span>Eliminar</span></button>
-          </div>
-        </div>
+  </div>
+</nav>
+
+<div class="container my-5">
+  <!-- Tarjeta del editor -->
+  <div class="card card-editor">
+    <div class="card-header bg-primary text-white d-flex align-items-center">
+      <i class="fas fa-edit me-2"></i>
+      <h5 class="mb-0">Editor de Texto</h5>
+    </div>
+    <div class="card-body">
+      <!-- Toolbar -->
+      <div id="toolbar" class="mb-3">
+        <button class="btn btn-light me-1" data-cmd="bold"><i class="fas fa-bold"></i></button>
+        <button class="btn btn-light me-1" data-cmd="italic"><i class="fas fa-italic"></i></button>
+        <button class="btn btn-light me-1" data-cmd="underline"><i class="fas fa-underline"></i></button>
+        <button class="btn btn-light me-1" data-cmd="foreColor" data-value="#e74c3c">
+          <i class="fas fa-font" style="color:#e74c3c"></i>
+        </button>
+        <button class="btn btn-light" data-cmd="backColor" data-value="#f1c40f">
+          <i class="fas fa-highlighter" style="color:#f1c40f"></i>
+        </button>
       </div>
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">Ideas de proyecto</div>
-          <div class="note-body">
-            <p>Crear página de notas que guarde automáticamente en localStorage.</p>
-            <p>Agregar filtros para marcar y ordenar por categoría.</p>
-            <p>Implementar modo oscuro para lectura nocturna.</p>
-          </div>
-          <div class="card-body text-end">
-            <button class="btn-edit"><i class="fas fa-edit"></i><span>Editar</span></button>
-            <button class="btn-delete"><i class="fas fa-trash"></i><span>Eliminar</span></button>
-          </div>
-        </div>
+      <!-- Área editable -->
+      <div id="editor" contenteditable>
+        <!-- aquí irá el texto -->
       </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Botones inferiores -->
+  <div class="d-flex justify-content-between mt-4">
+    <a href="notas.html" class="btn btn-secondary">
+      <i class="fas fa-arrow-left me-1"></i> Regresar
+    </a>
+    <button id="btnSave" class="btn btn-success">
+      <i class="fas fa-check me-1"></i> Listo
+    </button>
+  </div>
+</div>
+
+<!-- JS de Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Comandos del editor -->
+<script>
+  document.querySelectorAll('#toolbar .btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cmd = btn.getAttribute('data-cmd');
+      const value = btn.getAttribute('data-value');
+      document.execCommand(cmd, false, value || null);
+    });
+  });
+  // TODO: enlazar #btnSave para guardar el contenido
+</script>
 </body>
 </html>
