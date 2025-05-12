@@ -65,7 +65,43 @@
             color: white;
             padding: 20px 0;
             text-align: center;
+
         }
+        .card-editor {
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            background-color: #f0f0f0;
+        }
+
+        .card-editor .card-header {
+            background-color: #3498db;
+            color: #ffffff;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            padding: 10px;
+        }
+
+        /* Toolbar */
+        #toolbar .btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 6px;
+            background: #ffffff;
+            border: 1px solid #ddd;
+        }
+
+        /* Área editable */
+        #editor {
+            min-height: 150px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+            background: #fff;
+            outline: none;
+            font-size: 14px;
+        }
+
     </style>
 </head>
 <body>
@@ -109,10 +145,34 @@
                 </ul>
             </div>
             <div class="col-md-6 mt-4 mt-md-0">
-                <div class="imagen-editor">
-                    <i class="fas fa-file-alt fa-3x"></i>
+                <div class="card card-editor">
+                    <div class="card-header text-white d-flex align-items-center">
+                        <i class="fas fa-edit me-2"></i>
+                        <h5 class="mb-0">Editor de Texto</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Toolbar -->
+                        <div id="toolbar" class="mb-3 d-flex justify-content-start">
+                            <button class="btn me-1" data-cmd="bold"><i class="fas fa-bold"></i></button>
+                            <button class="btn me-1" data-cmd="italic"><i class="fas fa-italic"></i></button>
+                            <button class="btn me-1" data-cmd="underline"><i class="fas fa-underline"></i></button>
+                            <button class="btn me-1" data-cmd="foreColor" data-value="#e74c3c">
+                                <i class="fas fa-font" style="color:#e74c3c"></i>
+                            </button>
+                            <button class="btn" data-cmd="backColor" data-value="#f1c40f">
+                                <i class="fas fa-highlighter" style="color:#f1c40f"></i>
+                            </button>
+                        </div>
+                        <!-- Área editable -->
+                        <div id="editor" contenteditable>
+                            <p>Texto de ejemplo que puedes editar aquí.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+
+
         </div>
     </div>
 </section>
