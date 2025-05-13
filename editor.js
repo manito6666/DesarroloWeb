@@ -18,11 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const contenido = document.getElementById('editor').innerHTML;
 
         if (noteId) {
+            // ✅ Actualizar Nota Existente
             await actualizarNota(noteId, contenido);
         } else {
+            // ✅ Crear Nueva Nota
             await crearNota(userId, contenido);
         }
 
+        // ✅ Limpiar almacenamiento
         sessionStorage.removeItem('noteId');
         sessionStorage.removeItem('noteContent');
         window.location.href = 'notes.html';
@@ -41,8 +44,7 @@ async function actualizarNota(noteId, contenido) {
         if (response.ok) {
             alert("Nota actualizada correctamente.");
         } else {
-            const data = await response.json();
-            alert(data.message || "Error al actualizar la nota.");
+            throw new Error("Error al actualizar la nota.");
         }
     } catch (error) {
         alert("Error al actualizar la nota.");
@@ -62,12 +64,10 @@ async function crearNota(userId, contenido) {
         if (response.ok) {
             alert("Nota guardada correctamente.");
         } else {
-            const data = await response.json();
-            alert(data.message || "Error al guardar la nota.");
+            throw new Error("Error al guardar la nota.");
         }
     } catch (error) {
         alert("Error al guardar la nota.");
         console.error("❌ Error al guardar la nota:", error);
     }
 }
-
