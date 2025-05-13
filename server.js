@@ -17,44 +17,15 @@ mongoose.connect('mongodb+srv://Atlasadmin:Hola12345@editortextcluster.kc0gvhk.m
 const User = mongoose.model('User', new mongoose.Schema({
     nombre: String,
     apellidos: String,
-    correo: { type: String, unique: true, index: true },
+    correo: { type: String, unique: true },
     contrasena: String
 }));
+
 const Note = mongoose.model('Note', new mongoose.Schema({
     usuarioId: String,
     contenido: String,
     formato: String
 }));
-
-// ✅ Ruta de Registro
-app.post('/register', async (req, res) => {
-    const { nombre, apellidos, correo, contrasena } = req.body;
-    try {
-        const user = await User.create({ nombre, apellidos, correo, contrasena });
-        res.status(201).json({ message: 'Usuario registrado correctamente.', user });
-    } catch (error) {
-        if (error.code === 11000) {
-            res.status(400).json({ message: 'El correo ya está registrado.' });
-        } else {
-            res.status(500).json({ message: 'Error al registrar el usuario. Intenta nuevamente.' });
-        }
-    }
-});
-
-// ✅ Ruta de Inicio de Sesión
-app.post('/login', async (req, res) => {
-    const { correo, contrasena } = req.body;
-    try {
-        const user = await User.findOne({ correo, contrasena });
-        if (user) {
-            res.json({ message: 'Inicio de sesión exitoso', user });
-        } else {
-            res.status(401).json({ message: 'Credenciales incorrectas.' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Error al iniciar sesión.' });
-    }
-});
 
 // ✅ Ruta para Crear Notas
 app.post('/note', async (req, res) => {
@@ -76,8 +47,34 @@ app.get('/notes/:usuarioId', async (req, res) => {
         const notes = await Note.find({ usuarioId });
         res.status(200).json(notes);
     } catch (error) {
-        console.error("❌ Error al obtener las notas:", error);
         res.status(500).json({ message: 'Error al obtener las notas.' });
+    }
+});
+
+// ✅ Ruta para Eliminar Notas
+app.delete('/note/:noteId', async (req, res) => {
+    const { noteId } = req.params;
+    try {
+        const result = await Note.findByIdAndDelete(noteId);
+        if (result) {
+            res.status(200).json({ message: 'Nota eliminada correctamente.' });
+        } else {
+            res.status(404).json({ message: 'Nota no encontrada.' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar la nota.' });
+    }
+});
+
+// ✅ Ruta para Editar Notas
+app.put('/note/:noteId', async (req, res) => {
+    const { noteId } = req.params;
+    const { contenido } = req.body;
+    try {
+        const updatedNote = await Note.findByIdAndUpdate(noteId, { contenido }, { new: true });
+        res.status(200).json({ message: 'Nota actualizada correctamente.', note: updatedNote });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al actualizar la nota.' });
     }
 });
 
