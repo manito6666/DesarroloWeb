@@ -20,6 +20,7 @@ const User = mongoose.model('User', new mongoose.Schema({
     correo: { type: String, unique: true, index: true },
     contrasena: String
 }));
+
 const Note = mongoose.model('Note', new mongoose.Schema({
     usuarioId: String,
     contenido: String,
@@ -29,6 +30,7 @@ const Note = mongoose.model('Note', new mongoose.Schema({
 //  Ruta de Registro
 app.post('/register', async (req, res) => {
     const { nombre, apellidos, correo, contrasena } = req.body;
+
     try {
         const user = await User.create({ nombre, apellidos, correo, contrasena });
         res.status(201).json({ message: 'Usuario registrado correctamente.', user });
@@ -76,7 +78,7 @@ app.get('/notes/:usuarioId', async (req, res) => {
         const notes = await Note.find({ usuarioId });
         res.status(200).json(notes);
     } catch (error) {
-        console.error(" Error al obtener las notas:", error);
+        console.error(' Error al obtener las notas:', error);
         res.status(500).json({ message: 'Error al obtener las notas.' });
     }
 });
