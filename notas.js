@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Función para eliminar una nota
+//  Función para eliminar una nota
 async function eliminarNota(noteId) {
     if (confirm("¿Estás seguro de eliminar esta nota?")) {
         const response = await fetch(`http://localhost:3000/note/${noteId}`, {
