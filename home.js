@@ -15,7 +15,6 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     const data = await response.json();
     if (response.ok) {
         alert(data.message);
-        // ✅ Iniciar sesión automáticamente después de registrarse
         const loginResponse = await fetch('http://localhost:3000/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -25,7 +24,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         const loginData = await loginResponse.json();
         if (loginResponse.ok) {
             sessionStorage.setItem('userId', loginData.user._id);
-            window.location.href = 'editor.html'; // ✅ Redirige directamente al Editor
+            window.location.href = 'editor.html'; /
         } else {
             alert("Error al iniciar sesión automáticamente.");
         }

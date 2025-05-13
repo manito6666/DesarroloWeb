@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // ✅ Cargar Nota si se está editando
+
     const noteId = sessionStorage.getItem('noteId');
     const noteContent = sessionStorage.getItem('noteContent');
 
@@ -18,21 +18,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const contenido = document.getElementById('editor').innerHTML;
 
         if (noteId) {
-            // ✅ Actualizar Nota Existente
+
             await actualizarNota(noteId, contenido);
         } else {
-            // ✅ Crear Nueva Nota
+
             await crearNota(userId, contenido);
         }
 
-        // ✅ Limpiar almacenamiento
+
         sessionStorage.removeItem('noteId');
         sessionStorage.removeItem('noteContent');
         window.location.href = 'notes.html';
     });
 });
 
-// ✅ Función para actualizar una nota existente
 async function actualizarNota(noteId, contenido) {
     try {
         const response = await fetch(`http://localhost:3000/note/${noteId}`, {
@@ -48,11 +47,10 @@ async function actualizarNota(noteId, contenido) {
         }
     } catch (error) {
         alert("Error al actualizar la nota.");
-        console.error("❌ Error al actualizar la nota:", error);
+        console.error(" Error al actualizar la nota:", error);
     }
 }
 
-// ✅ Función para crear una nueva nota
 async function crearNota(userId, contenido) {
     try {
         const response = await fetch('http://localhost:3000/note', {
@@ -68,6 +66,6 @@ async function crearNota(userId, contenido) {
         }
     } catch (error) {
         alert("Error al guardar la nota.");
-        console.error("❌ Error al guardar la nota:", error);
+        console.error(" Error al guardar la nota:", error);
     }
 }

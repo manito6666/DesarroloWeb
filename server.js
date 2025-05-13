@@ -5,15 +5,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Conexión a MongoDB (Atlas o Local)
+// Conexión a MongoDB (Atlas o Local)
 mongoose.connect('mongodb+srv://Atlasadmin:Hola12345@editortextcluster.kc0gvhk.mongodb.net/EditorText?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-    .then(() => console.log('✅ Conectado a MongoDB'))
-    .catch((err) => console.error('❌ Error al conectar a MongoDB:', err));
+    .then(() => console.log(' Conectado a MongoDB'))
+    .catch((err) => console.error(' Error al conectar a MongoDB:', err));
 
-// ✅ Modelos de MongoDB
+// Modelos de MongoDB
 const User = mongoose.model('User', new mongoose.Schema({
     nombre: String,
     apellidos: String,
@@ -26,7 +26,7 @@ const Note = mongoose.model('Note', new mongoose.Schema({
     formato: String
 }));
 
-// ✅ Ruta de Registro
+//  Ruta de Registro
 app.post('/register', async (req, res) => {
     const { nombre, apellidos, correo, contrasena } = req.body;
     try {
@@ -41,7 +41,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// ✅ Ruta de Inicio de Sesión
+// Ruta de Inicio de Sesión
 app.post('/login', async (req, res) => {
     const { correo, contrasena } = req.body;
     try {
@@ -56,7 +56,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// ✅ Ruta para Crear Notas
+// Ruta para Crear Notas
 app.post('/note', async (req, res) => {
     const { usuarioId, contenido, formato } = req.body;
     if (!usuarioId) return res.status(400).json({ message: 'Error: Usuario no identificado.' });
@@ -69,20 +69,20 @@ app.post('/note', async (req, res) => {
     }
 });
 
-// ✅ Ruta para Obtener Notas por Usuario
+//  Ruta para Obtener Notas por Usuario
 app.get('/notes/:usuarioId', async (req, res) => {
     const { usuarioId } = req.params;
     try {
         const notes = await Note.find({ usuarioId });
         res.status(200).json(notes);
     } catch (error) {
-        console.error("❌ Error al obtener las notas:", error);
+        console.error(" Error al obtener las notas:", error);
         res.status(500).json({ message: 'Error al obtener las notas.' });
     }
 });
 
-// ✅ Servidor corriendo
+// Servidor corriendo
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
