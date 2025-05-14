@@ -1,7 +1,8 @@
-// ✅ server.js (Back-End Completo)
+// ✅ server.js (Back-End Completo y Corregido con JWT)
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -11,8 +12,8 @@ mongoose.connect('mongodb+srv://Atlasadmin:Hola12345@editortextcluster.kc0gvhk.m
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-    .then(() => console.log(' Conectado a MongoDB'))
-    .catch((err) => console.error(' Error al conectar a MongoDB:', err));
+    .then(() => console.log('✅ Conectado a MongoDB'))
+    .catch((err) => console.error('❌ Error al conectar a MongoDB:', err));
 
 // ✅ Modelos de MongoDB
 const User = mongoose.model('User', new mongoose.Schema({
@@ -28,17 +29,39 @@ const Note = mongoose.model('Note', new mongoose.Schema({
     formato: String
 }));
 
+// ✅ Generar Token JWT
+function generarToken(usuario) {
+    return jwt.sign({ userId: usuario._id }, 'secreto_jwt', { expiresIn: '1h' });
+}
+
+// ✅ Middleware para Verificar Token JWT
+function verificarToken(req, res, next) {
+    const token = req.headers['authorization'];
+    if (!token) return res.status(403).json({ message: 'Acceso denegado. Token no proporcionado.' });
+
+    jwt.verify(token, 'secreto_jwt', (err, decoded) => {
+        if (err) {
+            console.error("❌ Token inválido:", err);
+            return res.status(403).json({ message: 'Token inválido.' });
+        }
+        req.userId = decoded.userId;
+        next();
+    });
+}
+
 // ✅ Ruta de Registro
 app.post('/register', async (req, res) => {
     const { nombre, apellidos, correo, contrasena } = req.body;
     try {
         const user = await User.create({ nombre, apellidos, correo, contrasena });
-        res.status(201).json({ message: 'Usuario registrado correctamente.', user });
+        const token = generarToken(user);
+        res.status(201).json({ message: 'Usuario registrado correctamente.', user, token });
     } catch (error) {
+        console.error("❌ Error al registrar usuario:", error);
         if (error.code === 11000) {
             res.status(400).json({ message: 'El correo ya está registrado.' });
         } else {
-            res.status(500).json({ message: 'Error al registrar el usuario. Intenta nuevamente.' });
+            res.status(500).json({ message: 'Error al registrar el usuario.', error: error.message });
         }
     }
 });
@@ -49,72 +72,82 @@ app.post('/login', async (req, res) => {
     try {
         const user = await User.findOne({ correo, contrasena });
         if (user) {
-            res.json({ message: 'Inicio de sesión exitoso', user });
+            const token = generarToken(user);
+            res.json({ message: 'Inicio de sesión exitoso', user, token });
         } else {
             res.status(401).json({ message: 'Credenciales incorrectas.' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'Error al iniciar sesión.' });
+        console.error("❌ Error al iniciar sesión:", error);
+        res.status(500).json({ message: 'Error al iniciar sesión.', error: error.message });
     }
 });
 
-// ✅ Ruta para Crear Notas (POST)
-app.post('/note', async (req, res) => {
-    const { usuarioId, contenido, formato } = req.body;
+// ✅ Ruta para Crear Notas (POST) - Verificación con JWT
+app.post('/note', verificarToken, async (req, res) => {
+    const { contenido, formato } = req.body;
+    const usuarioId = req.userId;
+
     if (!usuarioId) return res.status(400).json({ message: 'Error: Usuario no identificado.' });
 
     try {
         const note = await Note.create({ usuarioId, contenido, formato });
         res.status(201).json({ message: 'Nota guardada correctamente.', note });
     } catch (error) {
-        res.status(500).json({ message: 'Error al guardar la nota.' });
+        console.error("❌ Error al guardar la nota:", error);
+        res.status(500).json({ message: 'Error al guardar la nota.', error: error.message });
     }
 });
 
-// ✅ Ruta para Obtener Notas por Usuario
-app.get('/notes/:usuarioId', async (req, res) => {
-    const { usuarioId } = req.params;
+// ✅ Ruta para Obtener Notas por Usuario (Protegida)
+app.get('/notes', verificarToken, async (req, res) => {
+    const usuarioId = req.userId;
     try {
         const notes = await Note.find({ usuarioId });
         res.status(200).json(notes);
     } catch (error) {
-        console.error(' Error al obtener las notas:', error);
-        res.status(500).json({ message: 'Error al obtener las notas.' });
+        console.error("❌ Error al obtener las notas:", error);
+        res.status(500).json({ message: 'Error al obtener las notas.', error: error.message });
     }
 });
 
-// ✅ Ruta para Actualizar Nota (PUT)
-app.put('/note/:id', async (req, res) => {
+// ✅ Ruta para Actualizar Nota (Protegida)
+app.put('/note/:id', verificarToken, async (req, res) => {
     const { id } = req.params;
     const { contenido } = req.body;
 
     try {
         const note = await Note.findByIdAndUpdate(id, { contenido }, { new: true });
-        if (note) {
-            res.status(200).json({ message: 'Nota actualizada correctamente.', note });
-        } else {
-            res.status(404).json({ message: 'Nota no encontrada.' });
+        if (!note) {
+            console.error("❌ Nota no encontrada para actualizar:", id);
+            return res.status(404).json({ message: 'Nota no encontrada.' });
         }
+        res.status(200).json({ message: 'Nota actualizada correctamente.', note });
     } catch (error) {
-        console.error('Error al actualizar la nota:', error);
-        res.status(500).json({ message: 'Error al actualizar la nota.' });
+        console.error("❌ Error al actualizar la nota:", error);
+        res.status(500).json({ message: 'Error al actualizar la nota.', error: error.message });
     }
 });
 
-// ✅ Ruta para Eliminar Nota (DELETE)
-app.delete('/note/:id', async (req, res) => {
+// ✅ Ruta para Eliminar Nota (Protegida)
+app.delete('/note/:id', verificarToken, async (req, res) => {
     const { id } = req.params;
 
     try {
-        await Note.findByIdAndDelete(id);
+        const note = await Note.findByIdAndDelete(id);
+        if (!note) {
+            console.error("❌ Nota no encontrada para eliminar:", id);
+            return res.status(404).json({ message: 'Nota no encontrada.' });
+        }
         res.status(200).json({ message: 'Nota eliminada correctamente.' });
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar la nota.' });
+        console.error("❌ Error al eliminar la nota:", error);
+        res.status(500).json({ message: 'Error al eliminar la nota.', error: error.message });
     }
 });
 
 // ✅ Servidor corriendo
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(` Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
 });

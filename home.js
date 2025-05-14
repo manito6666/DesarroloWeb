@@ -1,4 +1,4 @@
-// ✅ Registro y Login Automático
+// ✅ Registro y Login Automático con JWT
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = document.getElementById('nombre').value;
@@ -15,20 +15,9 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     const data = await response.json();
     if (response.ok) {
         alert(data.message);
-        // Iniciar sesión automáticamente después de registrarse
-        const loginResponse = await fetch('http://localhost:3000/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ correo, contrasena })
-        });
-
-        const loginData = await loginResponse.json();
-        if (loginResponse.ok) {
-            sessionStorage.setItem('userId', loginData.user._id);
-            window.location.href = 'editor.html';
-        } else {
-            alert("Error al iniciar sesión automáticamente.");
-        }
+        sessionStorage.setItem('token', data.token);
+        sessionStorage.setItem('userId', data.user._id);
+        window.location.href = 'editor.html';
     } else {
         alert(data.message);
     }

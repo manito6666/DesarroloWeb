@@ -17,5 +17,8 @@
     "url": "https://github.com/Jairagui/DesarroloWeb/issues"
   },
   "homepage": "https://github.com/Jairagui/DesarroloWeb#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  }
 }

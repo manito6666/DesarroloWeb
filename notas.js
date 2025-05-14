@@ -1,12 +1,21 @@
+// ✅ notas.js (Simplificado y JWT integrado)
 document.addEventListener('DOMContentLoaded', async () => {
     const userId = sessionStorage.getItem('userId');
-    if (!userId) {
+    const token = sessionStorage.getItem('token');
+
+    if (!userId || !token) {
         alert("Error: No se encontró el usuario. Por favor, inicia sesión.");
         window.location.href = 'Homme.html';
         return;
     }
 
-    const response = await fetch(`http://localhost:3000/notes/${userId}`);
+    const response = await fetch(`http://localhost:3000/notes`, {
+        method: 'GET',
+        headers: {
+            'Authorization': token
+        }
+    });
+
     const notes = await response.json();
     const notasContainer = document.getElementById('notasContainer');
 
@@ -24,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <button class="btn-edit" onclick="editarNota('${note._id}')">
                             <i class="fas fa-edit"></i> Editar
                         </button>
-                        <button class="btn-delete" onclick="eliminarNota('${note._id}')">
+                        <button class="btn-delete" onclick="eliminarNota('${note._id}', '${token}')">
                             <i class="fas fa-trash"></i> Eliminar
                         </button>
                     </div>
@@ -34,11 +43,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// ✅ Función para eliminar una nota
-async function eliminarNota(noteId) {
+// ✅ Función para eliminar una nota (con JWT)
+async function eliminarNota(noteId, token) {
     if (confirm("¿Estás seguro de eliminar esta nota?")) {
         const response = await fetch(`http://localhost:3000/note/${noteId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Authorization': token
+            }
         });
         if (response.ok) location.reload();
         else alert("Error al eliminar la nota.");

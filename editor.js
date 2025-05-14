@@ -1,13 +1,14 @@
-// ✅ editor.js (Front-End Completo)
+// ✅ editor.js (Simplificado y JWT integrado)
 document.addEventListener('DOMContentLoaded', () => {
     const userId = sessionStorage.getItem('userId');
-    if (!userId) {
+    const token = sessionStorage.getItem('token');
+
+    if (!userId || !token) {
         alert("Error: No se encontró el usuario. Por favor, inicia sesión.");
         window.location.href = 'Homme.html';
         return;
     }
 
-    // ✅ Cargar Nota si se está editando
     const noteId = sessionStorage.getItem('noteId');
     const noteContent = sessionStorage.getItem('noteContent');
 
@@ -24,9 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (noteId) {
-            await actualizarNota(noteId, contenido);
+            await actualizarNota(noteId, contenido, token);
         } else {
-            await crearNota(userId, contenido);
+            await crearNota(userId, contenido, token);
         }
 
         sessionStorage.removeItem('noteId');
@@ -35,19 +36,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ✅ Función para actualizar una nota existente
-async function actualizarNota(noteId, contenido) {
+// ✅ Función para actualizar una nota existente (con JWT)
+async function actualizarNota(noteId, contenido, token) {
     try {
         const response = await fetch(`http://localhost:3000/note/${noteId}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
             body: JSON.stringify({ contenido })
         });
 
         if (response.ok) {
             alert("Nota actualizada correctamente.");
         } else {
-            throw new Error("Error al actualizar la nota.");
+            alert("Error al actualizar la nota.");
         }
     } catch (error) {
         alert("Error al actualizar la nota.");
@@ -56,18 +60,21 @@ async function actualizarNota(noteId, contenido) {
 }
 
 // ✅ Función para crear una nueva nota
-async function crearNota(userId, contenido) {
+async function crearNota(userId, contenido, token) {
     try {
         const response = await fetch('http://localhost:3000/note', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ usuarioId: userId, contenido, formato: 'html' })
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
+            },
+            body: JSON.stringify({ contenido, formato: 'html' })
         });
 
         if (response.ok) {
             alert("Nota guardada correctamente.");
         } else {
-            throw new Error("Error al guardar la nota.");
+            alert("Error al guardar la nota.");
         }
     } catch (error) {
         alert("Error al guardar la nota.");
