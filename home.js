@@ -1,3 +1,4 @@
+// ✅ home.js (Registro - Redirigir al Editor)
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = document.getElementById('nombre').value;
@@ -14,13 +15,13 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     const data = await response.json();
     if (response.ok) {
         sessionStorage.setItem('token', data.token);
-        window.location.href = 'notes.html';
+        window.location.href = 'editor.html'; // ✅ Redirigir al Editor después de registrarse
     } else {
         alert(data.message);
     }
 });
 
-// ✅ Login
+// ✅ Login (Se queda igual)
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const correo = document.getElementById('loginCorreo').value;
