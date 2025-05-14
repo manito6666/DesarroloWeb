@@ -1,36 +1,28 @@
-// ✅ notas.js (Simplificado y JWT integrado)
+// ✅ notas.js (Súper Simplificado con Estilo en Botones)
 document.addEventListener('DOMContentLoaded', async () => {
-    const userId = sessionStorage.getItem('userId');
     const token = sessionStorage.getItem('token');
-
-    if (!userId || !token) {
-        alert("Error: No se encontró el usuario. Por favor, inicia sesión.");
+    if (!token) {
+        alert("Inicia sesión.");
         window.location.href = 'Homme.html';
         return;
     }
 
-    const response = await fetch(`http://localhost:3000/notes`, {
-        method: 'GET',
-        headers: {
-            'Authorization': token
-        }
+    const response = await fetch('http://localhost:3000/notes', {
+        headers: { 'Authorization': token }
     });
-
     const notes = await response.json();
-    const notasContainer = document.getElementById('notasContainer');
+    const container = document.getElementById('notasContainer');
 
     if (notes.length === 0) {
-        notasContainer.innerHTML = '<p>No tienes notas guardadas.</p>';
+        container.innerHTML = '<p>No tienes notas guardadas.</p>';
     } else {
-        notasContainer.innerHTML = notes.map(note => `
+        container.innerHTML = notes.map(note => `
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">Tu Nota</div>
-                    <div class="note-body">
-                        <p id="note-${note._id}">${note.contenido}</p>
-                    </div>
+                    <div class="note-body">${note.contenido}</div>
                     <div class="card-body text-end">
-                        <button class="btn-edit" onclick="editarNota('${note._id}')">
+                        <button class="btn-edit" onclick="editarNota('${note._id}', '${note.contenido}')">
                             <i class="fas fa-edit"></i> Editar
                         </button>
                         <button class="btn-delete" onclick="eliminarNota('${note._id}', '${token}')">
@@ -43,24 +35,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// ✅ Función para eliminar una nota (con JWT)
-async function eliminarNota(noteId, token) {
-    if (confirm("¿Estás seguro de eliminar esta nota?")) {
-        const response = await fetch(`http://localhost:3000/note/${noteId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': token
-            }
-        });
-        if (response.ok) location.reload();
-        else alert("Error al eliminar la nota.");
-    }
+function editarNota(id, contenido) {
+    sessionStorage.setItem('noteId', id);
+    sessionStorage.setItem('noteContent', contenido);
+    window.location.href = 'editor.html';
 }
 
-// ✅ Función para editar una nota
-function editarNota(noteId) {
-    const noteContent = document.getElementById(`note-${noteId}`).innerHTML;
-    sessionStorage.setItem('noteId', noteId);
-    sessionStorage.setItem('noteContent', noteContent);
-    window.location.href = 'editor.html';
+async function eliminarNota(id, token) {
+    if (confirm("¿Eliminar esta nota?")) {
+        await fetch(`http://localhost:3000/note/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': token }
+        });
+        location.reload();
+    }
 }

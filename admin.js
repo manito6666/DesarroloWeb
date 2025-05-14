@@ -1,37 +1,30 @@
-// ✅ admin.js (Actualizado con JWT)
+// ✅ admin.js (Súper Simplificado)
 document.addEventListener('DOMContentLoaded', async () => {
     const token = sessionStorage.getItem('token');
+    if (!token) {
+        alert("Inicia sesión.");
+        window.location.href = 'Homme.html';
+        return;
+    }
 
     const response = await fetch('http://localhost:3000/users', {
-        method: 'GET',
-        headers: {
-            'Authorization': token
-        }
+        headers: { 'Authorization': token }
     });
     const users = await response.json();
-
-    const usuariosContainer = document.getElementById('usuariosContainer');
-    users.forEach(user => {
-        const userElement = document.createElement('li');
-        userElement.classList.add('list-group-item');
-        userElement.innerHTML = `
-            <span>${user.nombre} (${user.correo})</span>
-            <button class="btn btn-danger btn-sm" onclick="deleteUser('${user._id}', '${token}')">Eliminar</button>
-        `;
-        usuariosContainer.appendChild(userElement);
-    });
+    const container = document.getElementById('usuariosContainer');
+    container.innerHTML = users.map(user => `
+        <li>${user.nombre} (${user.correo}) 
+            <button onclick="eliminarUsuario('${user._id}', '${token}')">Eliminar</button>
+        </li>
+    `).join('');
 });
 
-async function deleteUser(id, token) {
-    if (confirm('¿Estás seguro de eliminar este usuario?')) {
-        const response = await fetch(`http://localhost:3000/user/${id}`, {
+async function eliminarUsuario(id, token) {
+    if (confirm("¿Eliminar este usuario?")) {
+        await fetch(`http://localhost:3000/user/${id}`, {
             method: 'DELETE',
-            headers: {
-                'Authorization': token
-            }
+            headers: { 'Authorization': token }
         });
-        const data = await response.json();
-        alert(data.message);
-        window.location.reload();
+        location.reload();
     }
 }
