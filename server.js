@@ -92,3 +92,4 @@ app.delete('/note/:id', verificarToken, async (req, res) => {
 
 // ✅ Servidor corriendo
 app.listen(3000, () => console.log('✅ Servidor corriendo en http://localhost:3000'));
+
