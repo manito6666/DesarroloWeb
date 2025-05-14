@@ -1,3 +1,4 @@
+// ✅ editor.js (Front-End Completo)
 document.addEventListener('DOMContentLoaded', () => {
     const userId = sessionStorage.getItem('userId');
     if (!userId) {
@@ -17,15 +18,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnSave').addEventListener('click', async () => {
         const contenido = document.getElementById('editor').innerHTML;
 
+        if (contenido.trim() === "") {
+            alert("No puedes guardar una nota vacía.");
+            return;
+        }
+
         if (noteId) {
-            // ✅ Actualizar Nota Existente
             await actualizarNota(noteId, contenido);
         } else {
-            // ✅ Crear Nueva Nota
             await crearNota(userId, contenido);
         }
 
-        // ✅ Limpiar almacenamiento
         sessionStorage.removeItem('noteId');
         sessionStorage.removeItem('noteContent');
         window.location.href = 'notes.html';

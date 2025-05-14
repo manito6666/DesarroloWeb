@@ -1,3 +1,4 @@
+// ✅ server.js (Back-End Completo)
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -5,7 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-//  Conexión a MongoDB (Atlas o Local)
+// ✅ Conexión a MongoDB (Atlas o Local)
 mongoose.connect('mongodb+srv://Atlasadmin:Hola12345@editortextcluster.kc0gvhk.mongodb.net/EditorText?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -13,7 +14,7 @@ mongoose.connect('mongodb+srv://Atlasadmin:Hola12345@editortextcluster.kc0gvhk.m
     .then(() => console.log(' Conectado a MongoDB'))
     .catch((err) => console.error(' Error al conectar a MongoDB:', err));
 
-//  Modelos de MongoDB
+// ✅ Modelos de MongoDB
 const User = mongoose.model('User', new mongoose.Schema({
     nombre: String,
     apellidos: String,
@@ -27,10 +28,9 @@ const Note = mongoose.model('Note', new mongoose.Schema({
     formato: String
 }));
 
-//  Ruta de Registro
+// ✅ Ruta de Registro
 app.post('/register', async (req, res) => {
     const { nombre, apellidos, correo, contrasena } = req.body;
-
     try {
         const user = await User.create({ nombre, apellidos, correo, contrasena });
         res.status(201).json({ message: 'Usuario registrado correctamente.', user });
@@ -43,7 +43,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-//  Ruta de Inicio de Sesión
+// ✅ Ruta de Inicio de Sesión
 app.post('/login', async (req, res) => {
     const { correo, contrasena } = req.body;
     try {
@@ -58,7 +58,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
-//  Ruta para Crear Notas
+// ✅ Ruta para Crear Notas (POST)
 app.post('/note', async (req, res) => {
     const { usuarioId, contenido, formato } = req.body;
     if (!usuarioId) return res.status(400).json({ message: 'Error: Usuario no identificado.' });
@@ -71,7 +71,7 @@ app.post('/note', async (req, res) => {
     }
 });
 
-//  Ruta para Obtener Notas por Usuario
+// ✅ Ruta para Obtener Notas por Usuario
 app.get('/notes/:usuarioId', async (req, res) => {
     const { usuarioId } = req.params;
     try {
@@ -83,7 +83,37 @@ app.get('/notes/:usuarioId', async (req, res) => {
     }
 });
 
-//  Servidor corriendo
+// ✅ Ruta para Actualizar Nota (PUT)
+app.put('/note/:id', async (req, res) => {
+    const { id } = req.params;
+    const { contenido } = req.body;
+
+    try {
+        const note = await Note.findByIdAndUpdate(id, { contenido }, { new: true });
+        if (note) {
+            res.status(200).json({ message: 'Nota actualizada correctamente.', note });
+        } else {
+            res.status(404).json({ message: 'Nota no encontrada.' });
+        }
+    } catch (error) {
+        console.error('Error al actualizar la nota:', error);
+        res.status(500).json({ message: 'Error al actualizar la nota.' });
+    }
+});
+
+// ✅ Ruta para Eliminar Nota (DELETE)
+app.delete('/note/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await Note.findByIdAndDelete(id);
+        res.status(200).json({ message: 'Nota eliminada correctamente.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar la nota.' });
+    }
+});
+
+// ✅ Servidor corriendo
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(` Servidor corriendo en http://localhost:${PORT}`);
