@@ -1,4 +1,4 @@
-// ✅ notas.js (Súper Simplificado con Estilo en Botones)
+// ✅ notas.js (Súper Simplificado con Cerrar Sesión)
 document.addEventListener('DOMContentLoaded', async () => {
     const token = sessionStorage.getItem('token');
     if (!token) {
@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         container.innerHTML = notes.map(note => `
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header">Tu Nota</div>
                     <div class="note-body">${note.contenido}</div>
                     <div class="card-body text-end">
                         <button class="btn-edit" onclick="editarNota('${note._id}', '${note.contenido}')">
@@ -35,12 +34,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// ✅ Función para cerrar sesión (Botón Inicio)
+async function cerrarSesion() {
+    await fetch('http://localhost:3000/logout', {
+        method: 'POST'
+    });
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('userId');
+    window.location.href = 'Homme.html';
+}
+
+// ✅ Función para editar nota
 function editarNota(id, contenido) {
     sessionStorage.setItem('noteId', id);
     sessionStorage.setItem('noteContent', contenido);
     window.location.href = 'editor.html';
 }
 
+// ✅ Función para eliminar nota
 async function eliminarNota(id, token) {
     if (confirm("¿Eliminar esta nota?")) {
         await fetch(`http://localhost:3000/note/${id}`, {
