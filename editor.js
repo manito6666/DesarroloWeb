@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = sessionStorage.getItem('token');
     if (!token) {
-        window.location.href = 'Homme.html'; // Si no hay token, redirigimos al login
+        window.location.href = 'Homme.html'; // Si no hay token al login
         return;
     }
 
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (noteId) {
         cargarNota(noteId, token); // Si hay una nota guardada, la cargamos
     } else {
-        sessionStorage.removeItem('noteId'); // Si no hay nota, nos aseguramos de que esté limpio
+        sessionStorage.removeItem('noteId'); // Si no hay nota que este limpia
     }
 
     document.getElementById('btnSave').onclick = guardarNota; // Guardamos la nota
@@ -40,7 +40,7 @@ function guardarNota() {
 
     const noteId = sessionStorage.getItem('noteId');
     const url = noteId ? `http://localhost:3000/note/${noteId}` : 'http://localhost:3000/note'; // URL según si es nueva o editar
-    const method = noteId ? 'PUT' : 'POST'; // Método dependiendo si es nueva o editar
+    const method = noteId ? 'PUT' : 'POST';
 
     fetch(url, {
         method: method,
