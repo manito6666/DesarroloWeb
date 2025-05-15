@@ -48,3 +48,11 @@ async function crearNota(contenido, token) {
         body: JSON.stringify({ contenido })
     });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+        await fetch('http://localhost:3000/logout', { method: 'POST' });
+        sessionStorage.clear();
+        window.location.href = 'Homme.html';
+    });
+});

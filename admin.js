@@ -1,39 +1,47 @@
-
+// admin.js (dinámico para mostrar y eliminar usuarios)
 document.addEventListener('DOMContentLoaded', async () => {
     const token = sessionStorage.getItem('token');
-    if (!token) {
-        alert("Inicia sesión.");
-        window.location.href = 'Homme.html';
-        return;
-    }
-
-    const response = await fetch('http://localhost:3000/users', {
-        headers: { 'Authorization': token }
+    if (!token) return (window.location.href = 'Homme.html');
+  
+    const res = await fetch('http://localhost:3000/users', {
+      headers: { Authorization: token }
     });
-
-    const users = await response.json();
-    const container = document.getElementById('usuariosContainer');
-    container.innerHTML = "";
-
+  
+    const lista = document.querySelector('.list-group');
+    lista.innerHTML = '';
+  
+    const users = await res.json();
     users.forEach(user => {
-        const li = document.createElement('li');
-        li.textContent = `${user.nombre} (${user.correo})`;
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = "Eliminar";
-        deleteBtn.onclick = () => eliminarUsuario(user._id, token);
-
-        li.appendChild(deleteBtn);
-        container.appendChild(li);
+      const item = document.createElement('li');
+      item.className = 'list-group-item';
+      item.innerHTML = `
+        <span>${user.nombre} (${user.correo})</span>
+        <button class="btn btn-danger btn-sm" onclick="eliminarUsuario('${user._id}')">
+          <i class="fas fa-trash"></i> Eliminar
+        </button>
+      `;
+      lista.appendChild(item);
     });
-});
-
-async function eliminarUsuario(id, token) {
-    if (confirm("¿Eliminar este usuario?")) {
-        await fetch(`http://localhost:3000/user/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': token }
-        });
-        location.reload();
-    }
-}
+  });
+  
+  async function eliminarUsuario(id) {
+    const token = sessionStorage.getItem('token');
+    if (!confirm('¿Estás seguro de eliminar este usuario?')) return;
+    await fetch(`http://localhost:3000/user/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: token }
+    });
+    location.reload();
+  }
+  
+  // Botón de logout
+  const logoutBtn = document.createElement('button');
+  logoutBtn.textContent = 'Cerrar sesión';
+  logoutBtn.className = 'btn btn-outline-light btn-sm ms-2';
+  logoutBtn.onclick = async () => {
+    await fetch('http://localhost:3000/logout', { method: 'POST' });
+    sessionStorage.removeItem('token');
+    window.location.href = 'Homme.html';
+  };
+  document.querySelector('.ms-auto').appendChild(logoutBtn);
+  
