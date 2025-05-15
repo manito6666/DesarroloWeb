@@ -13,8 +13,8 @@ mongoose.connect('mongodb+srv://Atlasadmin:Hola12345@editortextcluster.kc0gvhk.m
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-    .then(() => console.log('✅ Conectado a MongoDB'))
-    .catch((err) => console.error('❌ Error al conectar a MongoDB:', err));
+    .then(() => console.log(' Conectado a MongoDB'))
+    .catch((err) => console.error(' Error al conectar a MongoDB:', err));
 
 // Modelos de MongoDB
 const userSchema = new mongoose.Schema({
@@ -129,4 +129,4 @@ app.delete('/note/:id', verificarToken, async (req, res) => {
 });
 
 // Iniciar servidor
-app.listen(3000, () => console.log('✅ Servidor corriendo en http://localhost:3000'));
+app.listen(3000, () => console.log(' Servidor corriendo en http://localhost:3000'));
