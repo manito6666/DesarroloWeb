@@ -1,4 +1,4 @@
-// ✅ editor.js (Súper Simplificado)
+// ✅ editor.js (Guardar Nota y Redirigir a Notas)
 document.addEventListener('DOMContentLoaded', () => {
     const token = sessionStorage.getItem('token');
     if (!token) {
@@ -12,9 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('editor').innerHTML = sessionStorage.getItem('noteContent');
     }
 
-    document.getElementById('btnSave').addEventListener('click', async () => {
+    document.getElementById('btnSave').onclick = async () => {
         const contenido = document.getElementById('editor').innerHTML.trim();
-        if (contenido === "") {
+        if (!contenido) {
             alert("No puedes guardar una nota vacía.");
             return;
         }
@@ -27,10 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         sessionStorage.removeItem('noteId');
         sessionStorage.removeItem('noteContent');
-        window.location.href = 'notes.html';
-    });
+        window.location.href = 'notes.html'; // ✅ Redirigir a Notas después de guardar
+    };
 });
 
+// ✅ Actualizar Nota
 async function actualizarNota(noteId, contenido, token) {
     await fetch(`http://localhost:3000/note/${noteId}`, {
         method: 'PUT',
@@ -39,10 +40,11 @@ async function actualizarNota(noteId, contenido, token) {
     });
 }
 
+// ✅ Crear Nota
 async function crearNota(contenido, token) {
     await fetch('http://localhost:3000/note', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': token },
-        body: JSON.stringify({ contenido, formato: 'html' })
+        body: JSON.stringify({ contenido })
     });
 }

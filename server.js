@@ -1,4 +1,4 @@
-// ✅ server.js (Completo y Limpio)
+// ✅ server.js (Hecho por un Alumno, Limpio y Claro)
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -12,24 +12,28 @@ mongoose.connect('mongodb+srv://Atlasadmin:Hola12345@editortextcluster.kc0gvhk.m
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log('✅ Conectado a MongoDB'))
-    .catch((err) => console.error('❌ Error al conectar:', err));
+    .catch(err => console.error('❌ Error al conectar:', err));
 
-// ✅ Modelos de MongoDB (Índice Único en Correo)
-const userSchema = new mongoose.Schema({
+// ✅ Modelos de MongoDB (Usuarios y Notas)
+const User = mongoose.model('User', {
     nombre: String,
     apellidos: String,
-    correo: { type: String, unique: true, index: true },
+    correo: { type: String, unique: true },
     contrasena: String
 });
 
-const User = mongoose.model('User', userSchema);
-const Note = mongoose.model('Note', { usuarioId: String, contenido: String, formato: String });
+const Note = mongoose.model('Note', {
+    usuarioId: String,
+    contenido: String,
+    formato: String
+});
 
-// ✅ Generar y Verificar Token
+// ✅ Función para Generar Token
 function generarToken(id) {
     return jwt.sign({ userId: id }, 'secreto_jwt', { expiresIn: '1h' });
 }
 
+// ✅ Verificar Token (Middleware)
 app.use((req, res, next) => {
     const token = req.headers['authorization'];
     if (token) {
@@ -40,7 +44,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// ✅ Registro (Verifica si el correo ya está registrado)
+// ✅ Registro de Usuarios
 app.post('/register', async (req, res) => {
     const { nombre, apellidos, correo, contrasena } = req.body;
     try {
@@ -48,14 +52,14 @@ app.post('/register', async (req, res) => {
         res.status(201).json({ message: 'Usuario registrado.', token: generarToken(user._id) });
     } catch (error) {
         if (error.code === 11000) {
-            res.status(400).json({ message: 'El correo ya está registrado. Intenta con otro.' });
+            res.status(400).json({ message: 'El correo ya está registrado.' });
         } else {
-            res.status(500).json({ message: 'Error al registrar el usuario. Intenta nuevamente.' });
+            res.status(500).json({ message: 'Error al registrar.' });
         }
     }
 });
 
-// ✅ Login
+// ✅ Inicio de Sesión
 app.post('/login', async (req, res) => {
     const { correo, contrasena } = req.body;
     const user = await User.findOne({ correo, contrasena });
@@ -66,11 +70,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// ✅ Cerrar Sesión (Eliminar Token en el Cliente)
-app.post('/logout', (req, res) => {
-    res.status(200).json({ message: 'Sesión cerrada correctamente.' });
-});
-
 // ✅ Crear Nota
 app.post('/note', async (req, res) => {
     if (!req.userId) return res.status(403).json({ message: 'No autenticado.' });
@@ -78,7 +77,7 @@ app.post('/note', async (req, res) => {
     res.status(201).json({ message: 'Nota creada.', note });
 });
 
-// ✅ Obtener Notas
+// ✅ Obtener Notas del Usuario
 app.get('/notes', async (req, res) => {
     if (!req.userId) return res.status(403).json({ message: 'No autenticado.' });
     const notes = await Note.find({ usuarioId: req.userId });
@@ -97,6 +96,38 @@ app.delete('/note/:id', async (req, res) => {
     if (!req.userId) return res.status(403).json({ message: 'No autenticado.' });
     const note = await Note.findByIdAndDelete(req.params.id);
     res.json(note ? { message: 'Nota eliminada.' } : { message: 'Nota no encontrada.' });
+});
+
+// ✅ Obtener Usuarios (Solo para Admin)
+app.get('/users', async (req, res) => {
+    const token = req.headers['authorization'];
+    if (!token) return res.status(403).json({ message: 'No autenticado.' });
+
+    const decoded = jwt.verify(token, 'secreto_jwt');
+    const user = await User.findById(decoded.userId);
+
+    if (user.correo === 'admin@gmail.com') {
+        const users = await User.find();
+        res.json(users);
+    } else {
+        res.status(403).json({ message: 'Acceso no autorizado.' });
+    }
+});
+
+// ✅ Eliminar Usuario (Solo para Admin)
+app.delete('/user/:id', async (req, res) => {
+    const token = req.headers['authorization'];
+    if (!token) return res.status(403).json({ message: 'No autenticado.' });
+
+    const decoded = jwt.verify(token, 'secreto_jwt');
+    const user = await User.findById(decoded.userId);
+
+    if (user.correo === 'admin@gmail.com') {
+        await User.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Usuario eliminado.' });
+    } else {
+        res.status(403).json({ message: 'Acceso no autorizado.' });
+    }
 });
 
 // ✅ Servidor corriendo

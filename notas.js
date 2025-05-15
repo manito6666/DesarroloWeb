@@ -1,4 +1,4 @@
-// ✅ notas.js (Súper Simplificado con Cerrar Sesión)
+// ✅ notas.js (Hecho por un Alumno)
 document.addEventListener('DOMContentLoaded', async () => {
     const token = sessionStorage.getItem('token');
     if (!token) {
@@ -12,46 +12,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     const notes = await response.json();
     const container = document.getElementById('notasContainer');
+    container.innerHTML = "";
 
-    if (notes.length === 0) {
-        container.innerHTML = '<p>No tienes notas guardadas.</p>';
-    } else {
-        container.innerHTML = notes.map(note => `
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="note-body">${note.contenido}</div>
-                    <div class="card-body text-end">
-                        <button class="btn-edit" onclick="editarNota('${note._id}', '${note.contenido}')">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn-delete" onclick="eliminarNota('${note._id}', '${token}')">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
-                    </div>
-                </div>
+    notes.forEach(note => {
+        const noteDiv = document.createElement('div');
+        noteDiv.classList.add('card');
+        noteDiv.innerHTML = `
+            <div class="note-body">${note.contenido}</div>
+            <div class="card-body text-end">
+                <button class="btn-edit" onclick="editarNota('${note._id}', '${note.contenido}')">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button class="btn-delete" onclick="eliminarNota('${note._id}', '${token}')">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
             </div>
-        `).join('');
-    }
+        `;
+        container.appendChild(noteDiv);
+    });
 });
 
-// ✅ Función para cerrar sesión (Botón Inicio)
-async function cerrarSesion() {
-    await fetch('http://localhost:3000/logout', {
-        method: 'POST'
-    });
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('userId');
+// ✅ Cerrar Sesión
+function cerrarSesion() {
+    sessionStorage.clear();
     window.location.href = 'Homme.html';
 }
 
-// ✅ Función para editar nota
+// ✅ Editar Nota
 function editarNota(id, contenido) {
     sessionStorage.setItem('noteId', id);
     sessionStorage.setItem('noteContent', contenido);
     window.location.href = 'editor.html';
 }
 
-// ✅ Función para eliminar nota
+// ✅ Eliminar Nota
 async function eliminarNota(id, token) {
     if (confirm("¿Eliminar esta nota?")) {
         await fetch(`http://localhost:3000/note/${id}`, {
