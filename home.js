@@ -1,42 +1,55 @@
 // Registro de nuevo usuario
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+// Aquí detectamos cuando el usuario envía el formulario de registro
+document.getElementById('registerForm').addEventListener('submit', (e) => {
+    e.preventDefault(); // Evitamos que se recargue la página
+
+    // Obtenemos los datos del formulario
     const nombre = document.getElementById('nombre').value;
     const correo = document.getElementById('correo').value;
     const contrasena = document.getElementById('contrasena').value;
 
-    const res = await fetch('http://localhost:3000/register', {
+    // Enviamos los datos al servidor para registrar
+    fetch('http://localhost:3000/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombre, correo, contrasena })
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-        sessionStorage.setItem('token', data.token);
-        window.location.href = 'editor.html';
-    } else {
-        alert(data.message);
-    }
+    })
+        .then(res => res.json()) // Convertimos la respuesta en JSON
+        .then(data => {
+            if (data.token) { // Si el registro fue exitoso
+                sessionStorage.setItem('token', data.token); // Guardamos el token
+                window.location.href = 'editor.html'; // Enviamos al editor
+            } else {
+                alert(data.message); // Si hay error, mostramos el mensaje
+            }
+        })
+        .catch(() => alert('Error al registrar.')); // Si algo falla, mostramos un mensaje
 });
 
 // Inicio de sesión
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+// Aquí detectamos cuando el usuario envía el formulario de login
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault(); // Evitamos que se recargue la página
+
+    // Obtenemos los datos del formulario
     const correo = document.getElementById('loginCorreo').value;
     const contrasena = document.getElementById('loginContrasena').value;
 
-    const res = await fetch('http://localhost:3000/login', {
+    // Enviamos los datos al servidor para iniciar sesión
+    fetch('http://localhost:3000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ correo, contrasena })
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-        sessionStorage.setItem('token', data.token);
-        window.location.href = correo === 'admin@gmail.com' ? 'admin.html' : 'editor.html';
-    } else {
-        alert("Credenciales incorrectas.");
-    }
+    })
+        .then(res => res.json()) // Convertimos la respuesta en JSON
+        .then(data => {
+            if (data.token) { // Si el login fue exitoso
+                sessionStorage.setItem('token', data.token); // Guardamos el token
+                // Si es admin, va al admin, si no, al editor
+                window.location.href = correo === 'admin@gmail.com' ? 'admin.html' : 'editor.html';
+            } else {
+                alert('Credenciales incorrectas.'); // Si las credenciales son incorrectas
+            }
+        })
+        .catch(() => alert('Error al iniciar sesión.')); // Si algo falla, mostramos un mensaje
 });

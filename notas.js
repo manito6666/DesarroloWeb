@@ -1,68 +1,71 @@
-// Cargar notas del usuario al iniciar
-document.addEventListener('DOMContentLoaded', async () => {
+// Al cargar la página, mostramos las notas del usuario
+document.addEventListener('DOMContentLoaded', () => {
     const token = sessionStorage.getItem('token');
-    if (!token) return window.location.href = 'Homme.html';
+    if (!token) {
+        window.location.href = 'Homme.html';
+        return;
+    }
 
-    try {
-        const res = await fetch('http://localhost:3000/notes', {
-            headers: { 'Authorization': token }
-        });
+    // Pedimos las notas del usuario
+    fetch('http://localhost:3000/notes', {
+        headers: { 'Authorization': token }
+    })
+        .then(res => res.json())
+        .then(notes => {
+            const container = document.getElementById('notasContainer');
+            container.innerHTML = ""; // Limpiamos el contenedor
 
-        const notes = await res.json();
-        const container = document.getElementById('notasContainer');
-        container.innerHTML = "";
-
-        notes.forEach(note => {
-            const noteDiv = document.createElement('div');
-            noteDiv.classList.add('card', 'mb-3');
-            noteDiv.innerHTML = `
-                <div class="note-body">${note.contenido}</div>
+            // Mostramos cada nota
+            for (let i = 0; i < notes.length; i++) {
+                const noteDiv = document.createElement('div');
+                noteDiv.classList.add('card', 'mb-3');
+                noteDiv.innerHTML = `
+                <div class="note-body">${notes[i].contenido}</div>
                 <div class="card-body text-end">
-                    <button class="btn btn-primary btn-sm" onclick="editarNota('${note._id}')">
+                    <button class="btn btn-primary btn-sm" onclick="editarNota('${notes[i]._id}')">
                         <i class="fas fa-edit"></i> Editar
                     </button>
-                    <button class="btn btn-danger btn-sm" onclick="eliminarNota('${note._id}')">
+                    <button class="btn btn-danger btn-sm" onclick="eliminarNota('${notes[i]._id}')">
                         <i class="fas fa-trash"></i> Eliminar
                     </button>
                 </div>
             `;
-            container.appendChild(noteDiv);
+                container.appendChild(noteDiv); // Metemos la nota en el contenedor
+            }
+        })
+        .catch(() => {
+            alert("Error al cargar las notas."); // Mostramos mensaje si falla
         });
-    } catch (error) {
-        console.error("Error al cargar las notas:", error);
-        alert("Error al cargar las notas.");
-    }
 });
 
-// Editar nota (redirige al editor)
+// Editar nota (guarda el ID y va al editor)
 function editarNota(id) {
     sessionStorage.setItem('noteId', id);
-    window.location.href = 'editor.html';
+    window.location.href = 'editor.html'; // Nos lleva al editor
 }
 
 // Eliminar nota
-async function eliminarNota(id) {
+function eliminarNota(id) {
     if (!confirm("¿Eliminar esta nota?")) return;
+
     const token = sessionStorage.getItem('token');
-
-    try {
-        const res = await fetch(`http://localhost:3000/note/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': token }
-        });
-
-        if (res.ok) {
-            location.reload();
-        } else {
+    fetch(`http://localhost:3000/note/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': token }
+    })
+        .then(res => {
+            if (res.ok) {
+                location.reload(); // Si se borra, recargamos
+            } else {
+                alert("Error al eliminar la nota."); // Mensaje si falla
+            }
+        })
+        .catch(() => {
             alert("Error al eliminar la nota.");
-        }
-    } catch (error) {
-        console.error("Error al eliminar la nota:", error);
-        alert("Error al eliminar la nota.");
-    }
+        });
 }
 
-// Cerrar sesión
+// Cerrar sesión limpia todo
 function cerrarSesion() {
     sessionStorage.clear();
     window.location.href = 'Homme.html';
