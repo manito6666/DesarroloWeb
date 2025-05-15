@@ -1,57 +1,69 @@
-// ✅ notas.js (Hecho por un Alumno)
+// Cargar notas del usuario al iniciar
 document.addEventListener('DOMContentLoaded', async () => {
     const token = sessionStorage.getItem('token');
-    if (!token) {
-        alert("Inicia sesión.");
-        window.location.href = 'Homme.html';
-        return;
+    if (!token) return window.location.href = 'Homme.html';
+
+    try {
+        const res = await fetch('http://localhost:3000/notes', {
+            headers: { 'Authorization': token }
+        });
+
+        const notes = await res.json();
+        const container = document.getElementById('notasContainer');
+        container.innerHTML = "";
+
+        notes.forEach(note => {
+            const noteDiv = document.createElement('div');
+            noteDiv.classList.add('card', 'mb-3');
+            noteDiv.innerHTML = `
+                <div class="note-body">${note.contenido}</div>
+                <div class="card-body text-end">
+                    <button class="btn btn-primary btn-sm" onclick="editarNota('${note._id}')">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="eliminarNota('${note._id}')">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            `;
+            container.appendChild(noteDiv);
+        });
+    } catch (error) {
+        console.error("Error al cargar las notas:", error);
+        alert("Error al cargar las notas.");
     }
-
-    const response = await fetch('http://localhost:3000/notes', {
-        headers: { 'Authorization': token }
-    });
-    const notes = await response.json();
-    const container = document.getElementById('notasContainer');
-    container.innerHTML = "";
-
-    notes.forEach(note => {
-        const noteDiv = document.createElement('div');
-        noteDiv.classList.add('card');
-        noteDiv.innerHTML = `
-            <div class="note-body">${note.contenido}</div>
-            <div class="card-body text-end">
-                <button class="btn-edit" onclick="editarNota('${note._id}', '${note.contenido}')">
-                    <i class="fas fa-edit"></i> Editar
-                </button>
-                <button class="btn-delete" onclick="eliminarNota('${note._id}', '${token}')">
-                    <i class="fas fa-trash"></i> Eliminar
-                </button>
-            </div>
-        `;
-        container.appendChild(noteDiv);
-    });
 });
 
-// ✅ Cerrar Sesión
-function cerrarSesion() {
-    sessionStorage.clear();
-    window.location.href = 'Homme.html';
-}
-
-// ✅ Editar Nota
-function editarNota(id, contenido) {
+// Editar nota (redirige al editor)
+function editarNota(id) {
     sessionStorage.setItem('noteId', id);
-    sessionStorage.setItem('noteContent', contenido);
     window.location.href = 'editor.html';
 }
 
-// ✅ Eliminar Nota
-async function eliminarNota(id, token) {
-    if (confirm("¿Eliminar esta nota?")) {
-        await fetch(`http://localhost:3000/note/${id}`, {
+// Eliminar nota
+async function eliminarNota(id) {
+    if (!confirm("¿Eliminar esta nota?")) return;
+    const token = sessionStorage.getItem('token');
+
+    try {
+        const res = await fetch(`http://localhost:3000/note/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': token }
         });
-        location.reload();
+
+        if (res.ok) {
+            location.reload();
+        } else {
+            alert("Error al eliminar la nota.");
+        }
+    } catch (error) {
+        console.error("Error al eliminar la nota:", error);
+        alert("Error al eliminar la nota.");
     }
+}
+
+// Cerrar sesión
+function cerrarSesion() {
+    sessionStorage.clear();
+    window.location.href = 'Homme.html';
 }
