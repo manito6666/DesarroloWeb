@@ -4,7 +4,10 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "echo 'No build step required.'",
+    "install": "npm install",
+    "deploy": "npm run install && npm run build && npm start"
   },
   "repository": {
     "type": "git",
@@ -17,12 +20,16 @@
     "url": "https://github.com/Jairagui/DesarroloWeb/issues"
   },
   "homepage": "https://github.com/Jairagui/DesarroloWeb#readme",
-  "description": "",
+  "description": "API de Desarrollo Web con Express, MongoDB y JWT",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }
