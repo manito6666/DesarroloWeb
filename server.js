@@ -1,50 +1,51 @@
-// server.js (Servidor con MongoDB y JWT)
 
 // Importando módulos necesarios
-const express = require('express'); // Pmanejar el servidor
-const mongoose = require('mongoose'); //  conectar con la base de datos MongoDB
-const cors = require('cors'); //  servidor acepte peticiones de otros dominios
-const jwt = require('jsonwebtoken'); // Pautenticación con tokens JWT
-const app = express(); //  aplicación de servidor
+const express = require('express'); // Manejar el servidor
+const mongoose = require('mongoose'); // Conectar con la base de datos MongoDB
+const cors = require('cors'); // Aceptar peticiones
+const jwt = require('jsonwebtoken'); // Autenticación con tokens JWT
+const app = express(); // Crear la aplicación 
 
-app.use(cors()); // peticiones desde cualquier origen
-app.use(express.json()); // Habilitar de JSON
+app.use(cors()); // Permitir peticiones desde cualquier origen
+app.use(express.json()); // Permitir manejo de JSON
 
 // Conectar a la base de datos de MongoDB
 mongoose.connect('mongodb+srv://Atlasadmin:Hola12345@editortextcluster.kc0gvhk.mongodb.net/EditorText', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-    .then(() => console.log(' Conectado a MongoDB')) // Mensaje si se conecta bien
-    .catch((err) => console.error(' Error al conectar a MongoDB:', err)); // Mensaje si falla
+    .then(() => console.log('Conectado a MongoDB')) // Si se conecta bien
+    .catch((err) => console.error('Error al conectar a MongoDB:', err)); // Si falla
 
 // Modelos de MongoDB
-const userSchema = new mongoose.Schema({ // Esquema para los usuarios
+// Modelo de usuario
+const userSchema = new mongoose.Schema({
     nombre: String,
     correo: { type: String, unique: true, index: true }, // El correo debe ser único
     contrasena: String
 });
-const User = mongoose.model('User', userSchema); // Creando el modelo de usuario
+const User = mongoose.model('User', userSchema);
 
-const noteSchema = new mongoose.Schema({ // Esquema para las notas
+// Modelo de notas
+const noteSchema = new mongoose.Schema({
     usuarioId: String, // ID del usuario que creó la nota
     contenido: String // El contenido de la nota
 });
-const Note = mongoose.model('Note', noteSchema); // Creando el modelo de nota
+const Note = mongoose.model('Note', noteSchema);
 
 // Función para generar un token JWT
 function generarToken(id) {
-    return jwt.sign({ userId: id }, 'secreto_jwt', { expiresIn: '1h' }); // Crea un token que expira en 1 hora
+    return jwt.sign({ userId: id }, 'secreto_jwt', { expiresIn: '1h' }); // Token que dura 1 hora
 }
 
 // Middleware para verificar el token JWT
 function verificarToken(req, res, next) {
-    const token = req.headers['authorization']; // Obtiene el token
+    const token = req.headers['authorization']; // Obtenemos el token
     if (token) {
-        jwt.verify(token, 'secreto_jwt', (err, decoded) => { // Verificamos el token
-            if (err) return res.status(403).json({ message: 'Token inválido.' }); // Si falla
-            req.userId = decoded.userId; // Guarda el ID del usuario
-            next(); // Continua
+        jwt.verify(token, 'secreto_jwt', (err, decoded) => {
+            if (err) return res.status(403).json({ message: 'Token inválido.' });
+            req.userId = decoded.userId; // Guardamos el ID del usuario
+            next();
         });
     } else {
         res.status(401).json({ message: 'No autenticado.' }); // Si no hay token
@@ -52,84 +53,96 @@ function verificarToken(req, res, next) {
 }
 
 // Registro de usuario
-app.post('/register', async (req, res) => {
+app.post('/register', (req, res) => {
     const { nombre, correo, contrasena } = req.body; // Datos del usuario
-    try {
-        const user = await User.create({ nombre, correo, contrasena }); // Creamos el usuario
-        res.status(201).json({ message: 'Usuario registrado.', token: generarToken(user._id) }); // Envia token
-    } catch (error) {
-        if (error.code === 11000) { // Si el correo ya está registrado
-            res.status(400).json({ message: 'El correo ya está registrado.' });
-        } else {
-            res.status(500).json({ message: 'Error al registrar usuario.' }); // Otro error
-        }
-    }
+
+    User.create({ nombre, correo, contrasena })
+        .then(user => res.status(201).json({ message: 'Usuario registrado.', token: generarToken(user._id) }))
+        .catch(err => {
+            if (err.code === 11000) {
+                res.status(400).json({ message: 'El correo ya está registrado.' });
+            } else {
+                console.error(err); // Muestra el error en consola para debug
+                res.status(500).json({ message: 'Error al registrar.' });
+            }
+        });
 });
 
 // Inicio de sesión
-app.post('/login', async (req, res) => {
+app.post('/login', (req, res) => {
     const { correo, contrasena } = req.body; // Datos para iniciar sesión
-    const user = await User.findOne({ correo, contrasena }); // Buscamos  el usuario en la base de datos
-    if (user) {
-        res.json({ message: 'Inicio de sesión exitoso.', token: generarToken(user._id) }); // Envia token
-    } else {
-        res.status(401).json({ message: 'Credenciales incorrectas.' }); // Si las credenciales son incorrectas
-    }
+
+    User.findOne({ correo, contrasena })
+        .then(user => {
+            if (user) {
+                res.json({ message: 'Inicio de sesión exitoso.', token: generarToken(user._id) });
+            } else {
+                res.status(401).json({ message: 'Credenciales incorrectas.' });
+            }
+        })
+        .catch(() => res.status(500).json({ message: 'Error al iniciar sesión.' }));
 });
 
+// Rutas de Usuarios
 // Obtener todos los usuarios (solo admin)
-app.get('/users', verificarToken, async (req, res) => {
-    const users = await User.find(); // Obtenemos todos los usuarios
-    res.json(users);
+app.get('/users', verificarToken, (req, res) => {
+    User.find()
+        .then(users => res.json(users))
+        .catch(() => res.status(500).json({ message: 'Error al cargar usuarios.' }));
 });
 
-// Eliminar usuario y sus notas admin
-app.delete('/user/:id', verificarToken, async (req, res) => {
-    const user = await User.findByIdAndDelete(req.params.id); // Borra el usuario por ID
-    if (user) {
-        await Note.deleteMany({ usuarioId: req.params.id }); // Borramos las notas del usuario
-        res.json({ message: 'Usuario y sus notas eliminados.' });
-    } else {
-        res.status(404).json({ message: 'Usuario no encontrado.' });
-    }
+// Eliminar usuario y sus notas (solo admin)
+app.delete('/user/:id', verificarToken, (req, res) => {
+    User.findByIdAndDelete(req.params.id)
+        .then(user => {
+            if (user) {
+                Note.deleteMany({ usuarioId: req.params.id }).then(() => {
+                    res.json({ message: 'Usuario y sus notas eliminados.' });
+                });
+            } else {
+                res.status(404).json({ message: 'Usuario no encontrado.' });
+            }
+        })
+        .catch(() => res.status(500).json({ message: 'Error al eliminar usuario.' }));
 });
 
-// Crear una nueva nota
-app.post('/note', verificarToken, async (req, res) => {
+// Rutas de Notas
+// Crear nota
+app.post('/note', verificarToken, (req, res) => {
     const { contenido } = req.body;
-    const note = await Note.create({ usuarioId: req.userId, contenido }); // Creamos una nota nueva
-    res.status(201).json(note);
+    Note.create({ usuarioId: req.userId, contenido })
+        .then(note => res.status(201).json(note))
+        .catch(() => res.status(500).json({ message: 'Error al crear nota.' }));
 });
 
-// Obtener todas las notas del usuario
-app.get('/notes', verificarToken, async (req, res) => {
-    const notes = await Note.find({ usuarioId: req.userId }); // Buscamos todas las notas del usuario
-    res.json(notes);
+// Obtener todas las notas
+app.get('/notes', verificarToken, (req, res) => {
+    Note.find({ usuarioId: req.userId })
+        .then(notes => res.json(notes))
+        .catch(() => res.status(500).json({ message: 'Error al cargar notas.' }));
 });
 
-// Obtener una nota específica (Para editar)
-app.get('/note/:id', verificarToken, async (req, res) => {
-    const note = await Note.findById(req.params.id); // Buacmos nota por ID
-    if (note) {
-        res.json(note);
-    } else {
-        res.status(404).json({ message: 'Nota no encontrada.' });
-    }
+// Obtener una nota específica
+app.get('/note/:id', verificarToken, (req, res) => {
+    Note.findById(req.params.id)
+        .then(note => note ? res.json(note) : res.status(404).json({ message: 'Nota no encontrada.' }))
+        .catch(() => res.status(500).json({ message: 'Error al cargar nota.' }));
 });
 
-// Actualizar una nota
-app.put('/note/:id', verificarToken, async (req, res) => {
+// Actualizar nota
+app.put('/note/:id', verificarToken, (req, res) => {
     const { contenido } = req.body;
-    const note = await Note.findByIdAndUpdate(req.params.id, { contenido }, { new: true }); // Actualizamos la nota
-    res.json(note ? { message: 'Nota actualizada.', note } : { message: 'Nota no encontrada.' });
+    Note.findByIdAndUpdate(req.params.id, { contenido }, { new: true })
+        .then(note => note ? res.json({ message: 'Nota actualizada.', note }) : res.status(404).json({ message: 'Nota no encontrada.' }))
+        .catch(() => res.status(500).json({ message: 'Error al actualizar nota.' }));
 });
 
-// Eliminar una nota
-app.delete('/note/:id', verificarToken, async (req, res) => {
-    const note = await Note.findByIdAndDelete(req.params.id); // Borra la nota por ID
-    res.json(note ? { message: 'Nota eliminada.' } : { message: 'Nota no encontrada.' });
+// Eliminar nota
+app.delete('/note/:id', verificarToken, (req, res) => {
+    Note.findByIdAndDelete(req.params.id)
+        .then(note => note ? res.json({ message: 'Nota eliminada.' }) : res.status(404).json({ message: 'Nota no encontrada.' }))
+        .catch(() => res.status(500).json({ message: 'Error al eliminar nota.' }));
 });
 
 // Iniciar el servidor
-app.listen(3000, () => console.log(' Servidor corriendo en http://localhost:3000'));
-
+app.listen(3000, () => console.log('Servidor corriendo en http://localhost:3000'));
